@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Cadastrar Despesa</title>
+
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+    <header class="dashboard-header">
+
+        <div class="logo">
+            FinanceAI
+        </div>
+
+        <nav class="dashboard-menu">
+            <a href="dashboard.html">Início</a>
+            <a href="receita.html">Receita</a>
+            <a href="despesa.html">Despesas</a>
+            <a href="historico.html">Histórico</a>
+            <a href="perfil.html">Perfil</a>
+            <a href="index.html">Sair</a>
+        </nav>
+
+    </header>
+
+
+    <main class="pagina-transacao">
+
+        <div class="transacao-container">
+
+            <h1>Cadastrar despesa</h1>
+
+            <p class="subtitulo">
+                Cadastre uma nova despesa
+            </p>
+
+
+            <form id="formulario-despesa">
+
+                <div class="campo">
+
+                    <label for="valor">
+                        Valor
+                    </label>
+
+                    <input
+                        type="number"
+                        id="valor"
+                        name="valor"
+                        step="0.01"
+                        placeholder="R$ 0,00"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="campo">
+
+                    <label for="data">
+                        Data
+                    </label>
+
+                    <input
+                        type="date"
+                        id="data"
+                        name="data"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="campo">
+
+                    <label for="categoria">
+                        Categoria
+                    </label>
+
+                    <select
+                        id="categoria"
+                        name="categoria"
+                        required
+                    >
+
+                        <option value="">
+                            Selecione uma categoria
+                        </option>
+
+                        <option value="educacao">
+                            Educação
+                        </option>
+
+                        <option value="alimentacao">
+                            Alimentação
+                        </option>
+
+                        <option value="moradia">
+                            Moradia
+                        </option>
+
+                        <option value="transporte">
+                            Transporte
+                        </option>
+
+                        <option value="saude">
+                            Saúde
+                        </option>
+
+                        <option value="lazer">
+                            Lazer
+                        </option>
+
+                        <option value="outros">
+                            Outros
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <div class="campo">
+
+                    <label for="descricao">
+                        Descrição
+                    </label>
+
+                    <textarea
+                        id="descricao"
+                        name="descricao"
+                        rows="4"
+                        placeholder="Digite uma descrição"
+                        required
+                    ></textarea>
+
+                </div>
+
+
+                <button
+                    type="submit"
+                    class="btn-salvar"
+                >
+                    Salvar
+                </button>
+
+            </form>
+
+
+            <a
+                href="dashboard.html"
+                class="voltar"
+            >
+                ← Voltar para o dashboard
+            </a>
+
+        </div>
+
+    </main>
+<script src="js/script.js"></script>
+</body>
+
+</html>
