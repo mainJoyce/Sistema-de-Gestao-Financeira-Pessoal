@@ -87,7 +87,7 @@ O sistema deverá respeitar algumas regras fundamentais:
 
 O projeto prevê autenticação de usuários, proteção de dados financeiros, validação de informações e controle de acesso para garantir que cada usuário visualize apenas seus próprios dados.
 
-## quipe
+## equipe
 
 **Integrantes:** Anne Vitoria, Guilherme de Franca, Joyce Stefany, Nayelle Fonseca, Rillary Luise e Sidney Miguel
 
