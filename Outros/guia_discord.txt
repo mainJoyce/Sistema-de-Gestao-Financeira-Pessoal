@@ -1,0 +1,337 @@
+Abaixo, consta o resumo para melhor compreensão do nosso projeto.
+
+Descrição:
+
+O Sistema de Gestão Financeira Pessoal tem como objetivo auxiliar usuários no controle, acompanhamento e planejamento de suas finanças, permitindo uma visão clara sobre receitas, despesas, hábitos de consumo e saúde financeira.
+
+A plataforma centraliza informações financeiras dos usuários, organizando automaticamente transações, classificando gastos, monitorando orçamentos e gerando insights inteligentes para auxiliar na tomada de decisões financeiras mais conscientes.
+
+Além das funcionalidades básicas de controle financeiro, o sistema utiliza regras de negócio para identificar padrões de comportamento, sugerir melhorias na distribuição de renda e emitir alertas preventivos relacionados a gastos excessivos.
+
+1. Objetivos
+
+Entrega de um sistema de gestão financeira pessoal que permita ao usuário controlar receitas e despesas, acompanhar orçamentos, visualizar indicadores financeiros, receber alertas e insights personalizados, gerar relatórios financeiros e obter recomendações para melhor planejamento e saúde financeira.
+
+2. Visão Geral e Objetivos
+
+2.1 Visão Geral
+
+O sistema atuará como um assistente financeiro digital capaz de:
+
+• Receber e registrar transações financeiras.
+• Categorizar despesas e receitas.
+• Consolidar informações financeiras.
+• Monitorar limites orçamentários.
+• Identificar tendências de consumo.
+• Gerar recomendações financeiras personalizadas.
+• Apoiar a educação financeira dos usuários.
+
+2.2 Objetivos
+
+Objetivos Principais:
+
+• Proporcionar controle financeiro simplificado.
+• Aumentar a transparência dos gastos do usuário.
+• Estimular hábitos financeiros saudáveis.
+• Auxiliar no planejamento financeiro mensal.
+• Reduzir riscos de endividamento.
+
+Objetivos Secundários:
+
+• Incentivar a criação de reservas financeiras.
+• Promover educação financeira baseada no perfil do usuário.
+• Apoiar metas de investimento.
+• Identificar gastos recorrentes desnecessários.
+• Gerar relatórios gerenciais para acompanhamento financeiro.
+
+3. Requisitos do Sistema
+
+3.1 Registro e gestão de Transações
+
+Funcionalidades:
+
+O sistema deve permitir:
+
+• Registro manual de receitas.
+• Registro manual de despesas.
+• Importação automática de transações via integração bancária.
+• Atualização do histórico financeiro do usuário.
+• Edição ou exclusão de transações autorizadas.
+• Dados obrigatórios da transação
+• Campo Obrigatório
+• Descrição Sim
+• Valor Sim
+• Data Sim
+• Tipo (Receita/Despesa) Sim
+• Categoria Não
+• Estabelecimento Não
+• Recorrência Não
+
+3.2 Classificação de Gastos
+
+Toda despesa deverá possuir uma categoria financeira.
+
+Categorias padrão:
+
+• Alimentação
+• Moradia
+• Transporte
+• Saúde
+• Educação
+• Lazer
+• Compras
+• Investimentos
+• Assinaturas
+• Impostos
+• Contas e Serviços
+• Outros
+
+Regras:
+
+• O usuário pode definir a categoria manualmente.
+• O sistema pode sugerir uma categoria automaticamente com base no estabelecimento.
+• O usuário poderá alterar a categoria posteriormente.
+
+Exemplo
+
+McDonald's -> Alimentação
+
+Netflix -> Assinaturas
+
+Posto Shell -> Transporte
+
+Farmácia São João -> Saúde
+
+3.3 Consulta e Acompanhamento Financeiro
+
+O sistema deverá disponibilizar dashboards e relatórios.
+
+Filtros:
+
+• Data inicial e final.
+• Categoria.
+• Tipo de transação.
+• Estabelecimento.
+• Gastos recorrentes.
+
+Visualizações:
+
+• Gastos por categoria.
+• Gastos por período.
+• Gastos por estabelecimento.
+• Evolução mensal de despesas.
+• Evolução mensal de receitas.
+• Comparativo mês a mês.
+
+Indicadores:
+
+• Receita total.
+• Despesa total.
+• Saldo disponível.---
+• Economia acumulada.---
+• Percentual de comprometimento da renda.
+
+3.4 Definição e Acompanhamento de Orçamento
+
+O usuário poderá criar limites financeiros para categorias específicas.
+
+Exemplo:
+
+Categoria Limite
+
+• Alimentação R$ 1.000
+• Lazer R$ 500
+• Transporte R$ 600
+
+Regras de acompanhamento
+
+O sistema deverá:
+• Calcular consumo do orçamento em tempo real.
+• Exibir percentual utilizado.
+• Exibir saldo restante.
+• Emitir alertas preventivos.
+
+Faixas de alerta:
+
+Consumo Status
+
+• Até 70% Normal
+• 71% a 89% Atenção
+• Acima de 90% Risco
+• Acima de 100% Estourado
+
+3.5 Insights e Alertas (Não Obrigatório)
+
+• O sistema deverá analisar os dados financeiros do usuário.
+
+Alertas possíveis
+
+Orçamento próximo do limite
+
+Exemplo:
+
+• Você já utilizou 92% do orçamento de alimentação neste mês.
+
+Orçamento excedido
+
+Exemplo:
+
+• Seu gasto com lazer ultrapassou o limite definido em R$ 120.
+
+Aumento incomum de gastos
+
+Exemplo:
+
+• Seus gastos com transporte aumentaram 35% em relação ao mês anterior.
+
+Queda significativa de renda
+
+Exemplo:
+
+• Sua receita mensal apresentou redução de 18% em comparação ao período anterior.
+
+Reserva financeira insuficiente
+
+• Exemplo:
+
+Sua reserva financeira atual cobre apenas 10 dias de despesas médias.
+
+3.6 Relatório de Distribuição de Gastos
+
+O sistema deverá gerar um relatório contendo:
+
+Informações:
+
+• Total gasto no mês.
+• Total recebido no mês.
+• Saldo final.
+• Principais categorias.
+• Evolução em relação ao mês anterior.
+• Ranking de categorias.
+
+Exemplo:
+
+• Categoria Valor %
+• Moradia R$ 1.800 36%
+• Alimentação R$ 1.000 20%
+• Transporte R$ 600 12%
+• Lazer R$ 500 10%
+
+3.7 Mapeamento Salarial e Inteligência Financeira
+
+Cadastro de salário
+
+O usuário poderá informar:
+
+• Salário líquido.
+• Receitas recorrentes.
+• Receitas variáveis.
+
+Formação da base financeira
+
+A partir da renda identificada, o sistema calculará automaticamente recomendações financeiras.
+
+Regra sugerida (50/30/20)
+• 50% Necessidades.
+• 30% Desejos.
+• 20% Investimentos e reserva financeira.
+
+Exemplo:
+
+• Salário líquido: R$ 5.000
+• Necessidades → R$ 2.500
+• Desejos → R$ 1.500
+• Investimentos → R$ 1.000
+
+3.8 Recomendação de Investimentos:
+
+O sistema deverá incentivar a construção de patrimônio financeiro.
+
+Regras:
+
+• Recomendar percentual mínimo de investimento.
+• Informar valor ideal para reserva de emergência.
+• Exibir evolução do patrimônio acumulado.
+• Informar metas sugeridas.
+
+Insight exemplo
+
+Com sua renda atual, recomenda-se investir pelo menos R$ 800 por mês para atingir uma reserva equivalente a 6 meses de despesas em aproximadamente 24 meses.
+
+
+3.9 Metas Financeiras
+
+O usuário poderá criar metas.
+
+Exemplos
+
+• Comprar um carro.
+• Fazer uma viagem.
+• Comprar um imóvel.
+• Montar reserva de emergência.
+
+Informações da meta
+
+• Nome.
+• Valor objetivo.
+• Data desejada.
+• Valor já acumulado.
+
+Cálculo
+
+O sistema deverá informar:
+• Valor necessário por mês.
+• Tempo estimado para conclusão.
+• Percentual atingido.
+
+3.10 Score de Saúde Financeira
+
+O sistema poderá gerar uma pontuação financeira baseada em:
+
+Critérios:
+
+• Percentual de economia.
+• Frequência de estouro de orçamento.
+• Evolução patrimonial.
+• Constância de investimentos.
+• Controle de gastos.
+
+Faixas (Score Nível):
+
+• 0-39 Crítico
+• 40-59 Atenção
+• 60-79 Bom
+• 80-100 Excelente
+
+
+3.11 Regras de Negócio Gerais
+
+RN001 - Toda transação deverá estar associada a um usuário.
+RN002 - Uma despesa deve possuir apenas uma categoria principal.
+RN003 - O valor da transação deve ser maior que zero.
+RN004 - O orçamento é calculado mensalmente por padrão.
+RN005 - O sistema deve manter histórico financeiro sem perda de dados.
+RN006 - Insights só poderão ser gerados quando houver dados suficientes para análise.
+RN007 - As recomendações financeiras devem considerar a renda atual do usuário.
+RN008 - O score financeiro deve ser recalculado sempre que houver novas transações relevantes.
+RN009 - O sistema deverá manter histórico dos relatórios mensais gerados.
+
+4. Requisitos Não Funcionais
+
+4.1 Usabilidade
+
+RNF011 - A interface do usuário deverá ser intuitiva, amigável e de fácil utilização para usuários com diferentes níveis de conhecimento financeiro.
+RNF012 - O dashboard principal deverá apresentar as informações financeiras mais relevantes em uma única visão, facilitando a tomada de decisão.
+RNF013 - As principais funcionalidades deverão estar acessíveis em no máximo 3 cliques.
+RNF014 - O sistema deverá disponibilizar relatórios e gráficos interativos para visualização de receitas, despesas, orçamento e evolução financeira.
+RNF015  - A interface deverá ser responsiva, permitindo utilização em dispositivos desktop, tablet e smartphone.
+
+4.2 Desempenho
+
+RNF016 - O sistema deverá ser capaz de processar grandes volumes de transações financeiras sem degradação perceptível de desempenho.
+RNF017 - Consultas financeiras deverão responder em até 2 segundo
+RNF018 - O processamento de novas transações deverá ocorrer em menos de 500 ms.
+RNF019 - As consultas realizadas pelos usuários deverão fornecer informações em tempo real ou com atraso máximo previamente definido pela arquitetura da solução.
+RNF020 - A geração de relatórios mensais deverá ocorrer em tempo inferior a 10 segundos.
+
+Tecnologias / Stack: Java/Spring

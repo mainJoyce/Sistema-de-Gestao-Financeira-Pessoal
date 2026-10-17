@@ -1,0 +1,1602 @@
+Documentação Técnica — Sistema de Gestão Financeira Pessoal
+
+Esta documentação deve funcionar como o documento-base do projeto, servindo para vocês definirem arquitetura, banco de dados, backend, regras de negócio, APIs, desenvolvimento e testes.
+
+## 1. Identificação do Projeto
+
+Nome: Sistema de Gestão Financeira Pessoal
+Tipo:** Aplicação web de gestão financeira
+*Objetivo:** Controle, análise e planejamento das finanças pessoais
+**Backend:** Java + Spring
+**Arquitetura:** API REST em camadas
+**Banco de dados:** a definir
+**Frontend:** a definir
+**Versionamento do código:** Git + GitHub
+
+---
+
+# 2. Objetivo do Sistema
+
+Desenvolver uma plataforma capaz de centralizar as informações financeiras do usuário e transformá-las em informações úteis para tomada de decisão.
+
+O sistema deverá permitir:
+
+* cadastrar receitas;
+* cadastrar despesas;
+* categorizar transações;
+* acompanhar saldo;
+* criar orçamentos;
+* acompanhar consumo dos orçamentos;
+* gerar indicadores;
+* visualizar gráficos;
+* gerar relatórios;
+* criar metas financeiras;
+* acompanhar patrimônio;
+* analisar comportamento financeiro;
+* emitir alertas;
+* gerar insights;
+* calcular score de saúde financeira;
+* fornecer recomendações financeiras baseadas nas regras definidas.
+
+---
+
+# 3. Escopo do MVP
+Como o projeto possui muitas funcionalidades, **não é recomendável desenvolver tudo simultaneamente.
+
+O MVP deve priorizar o núcleo financeiro.
+
+### MVP — Obrigatório
+
+1. Cadastro/login de usuário
+2. Cadastro de receitas
+3. Cadastro de despesas
+4. Consulta de transações
+5. Edição de transações
+6. Exclusão controlada de transações
+7. Categorias
+8. Dashboard
+9. Cálculo de receita
+10. Cálculo de despesas
+11. Cálculo de saldo
+12. Orçamentos
+13. Percentual utilizado do orçamento
+14. Alertas de orçamento
+15. Relatórios básicos
+
+### Segunda etapa
+
+* metas financeiras;
+* mapeamento salarial;
+* regra 50/30/20;
+* comparação mensal;
+* gastos recorrentes;
+* patrimônio;
+* score financeiro.
+
+### Terceira etapa
+
+* insights automáticos;
+* categorização automática;
+* recomendações;
+* importação bancária;
+* análise mais avançada de comportamento.
+
+> **Importante:** a integração bancária e funcionalidades de inteligência devem ser tratadas como etapas posteriores. Elas aumentam bastante a complexidade do projeto.
+
+---
+
+# 4. Arquitetura
+
+A arquitetura recomendada para o backend é:
+
+```text
+Frontend
+    │
+    │ HTTP/JSON
+    ▼
+┌───────────────────────────┐
+│       REST API            │
+├───────────────────────────┤
+│ Controllers               │
+├───────────────────────────┤
+│ Services                  │
+├───────────────────────────┤
+│ Repositories              │
+├───────────────────────────┤
+│ JPA / Hibernate           │
+└─────────────┬─────────────┘
+              │
+              ▼
+        Banco de Dados
+```
+
+### Responsabilidade de cada camada
+
+**Controller**
+
+Recebe requisições HTTP e devolve respostas.
+
+**Service**
+
+Contém as regras de negócio.
+
+**Repository**
+
+Responsável pelo acesso aos dados.
+
+**Entity**
+
+Representa as entidades persistidas no banco.
+
+**DTO**
+
+Define os dados que entram e saem da API.
+
+---
+
+# 5. Stack Tecnológica
+
+## Backend
+
+* Java
+* Spring Boot
+* Spring Web
+* Spring Data JPA
+* Hibernate
+* Bean Validation
+* Spring Security
+* JWT
+
+## Banco
+
+Uma opção adequada:
+
+* PostgreSQL
+
+## Testes
+
+* JUnit
+* Mockito
+* Spring Boot Test
+
+## Documentação
+
+* OpenAPI / Swagger
+
+## Desenvolvimento
+
+* IntelliJ IDEA ou VS Code
+* Maven
+* Git
+* GitHub
+* Postman ou Insomnia
+* DBeaver
+
+---
+
+# 6. Estrutura do projeto
+
+Sugestão:
+
+```text
+src/
+└── main/
+    └── java/
+        └── br.com.financeiro/
+            ├── config/
+            ├── controller/
+            ├── dto/
+            ├── entity/
+            ├── exception/
+            ├── repository/
+            ├── security/
+            ├── service/
+            └── util/
+```
+
+Recursos:
+
+```text
+src/
+└── main/
+    └── resources/
+        ├── application.properties
+        └── application-dev.properties
+```
+
+Testes:
+
+```text
+src/
+└── test/
+    └── java/
+        └── br.com.financeiro/
+```
+
+---
+
+# 7. Organização dos pacotes
+
+## `entity`
+
+Entidades do banco.
+
+Exemplo:
+
+```text
+Usuario
+Transacao
+Categoria
+Orcamento
+MetaFinanceira
+Investimento
+Relatorio
+```
+
+## `repository`
+
+Interfaces de persistência.
+
+```text
+UsuarioRepository
+TransacaoRepository
+CategoriaRepository
+OrcamentoRepository
+MetaRepository
+```
+
+## `service`
+
+Regras de negócio.
+
+```text
+UsuarioService
+TransacaoService
+CategoriaService
+OrcamentoService
+MetaService
+RelatorioService
+ScoreService
+```
+
+## `controller`
+
+Endpoints REST.
+
+```text
+UsuarioController
+TransacaoController
+CategoriaController
+OrcamentoController
+MetaController
+RelatorioController
+DashboardController
+```
+
+---
+
+# 8. Modelagem inicial do banco
+
+Uma proposta inicial:
+
+```text
+USUARIO
+   │
+   ├────< TRANSACAO >──── CATEGORIA
+   │
+   ├────< ORCAMENTO >──── CATEGORIA
+   │
+   ├────< META_FINANCEIRA
+   │
+   ├────< INVESTIMENTO
+   │
+   └────< RELATORIO
+```
+
+---
+
+# 9. Entidade Usuário
+
+Campos sugeridos:
+
+```text
+Usuario
+--------------------
+id
+nome
+email
+senha
+salarioLiquido
+dataCriacao
+dataAtualizacao
+ativo
+```
+
+### Regras
+
+* `id` deve ser único.
+* `email` deve ser único.
+* senha nunca deve ser armazenada em texto puro.
+* salário não pode ser negativo.
+* usuário deve possuir suas próprias transações.
+
+---
+
+# 10. Entidade Transação
+
+Campos:
+
+```text
+Transacao
+--------------------
+id
+usuario_id
+descricao
+valor
+data
+tipo
+categoria_id
+estabelecimento
+recorrente
+dataCriacao
+dataAtualizacao
+```
+
+### Tipo
+
+Utilizar enum:
+
+```text
+RECEITA
+DESPESA
+```
+
+### Regras
+
+```text
+valor > 0
+tipo obrigatório
+descrição obrigatória
+data obrigatória
+usuario obrigatório
+```
+
+---
+
+# 11. Entidade Categoria
+
+Campos:
+
+```text
+Categoria
+--------------------
+id
+nome
+tipo
+ativa
+```
+
+Categorias padrão:
+
+```text
+ALIMENTACAO
+MORADIA
+TRANSPORTE
+SAUDE
+EDUCACAO
+LAZER
+COMPRAS
+INVESTIMENTOS
+ASSINATURAS
+IMPOSTOS
+CONTAS_SERVICOS
+OUTROS
+```
+
+Uma categoria pode ser relacionada a várias transações.
+
+---
+
+# 12. Entidade Orçamento
+
+```text
+Orcamento
+--------------------
+id
+usuario_id
+categoria_id
+valorLimite
+mes
+ano
+dataCriacao
+dataAtualizacao
+```
+
+Exemplo:
+
+```text
+Usuário: 1
+Categoria: Alimentação
+Limite: 1000
+Mês: 8
+Ano: 2026
+```
+
+---
+
+# 13. Entidade Meta Financeira
+
+```text
+MetaFinanceira
+--------------------
+id
+usuario_id
+nome
+valorObjetivo
+valorAcumulado
+dataDesejada
+status
+dataCriacao
+dataAtualizacao
+```
+
+Status:
+
+```text
+EM_ANDAMENTO
+CONCLUIDA
+CANCELADA
+```
+
+---
+
+# 14. Entidade Investimento
+
+Uma estrutura inicial poderia ser:
+
+```text
+Investimento
+--------------------
+id
+usuario_id
+descricao
+valorInvestido
+data
+tipo
+```
+
+Como o requisito não especifica produtos financeiros específicos, não é necessário começar implementando corretoras, ações, fundos etc.
+
+---
+
+# 15. Relacionamentos
+
+### Usuário → Transações
+
+**1:N**
+
+Um usuário possui várias transações.
+
+### Categoria → Transações
+
+**1:N**
+
+Uma categoria pode possuir várias transações.
+
+### Usuário → Orçamentos
+
+**1:N**
+
+### Usuário → Metas
+
+**1:N**
+
+### Usuário → Investimentos
+
+**1:N**
+
+---
+
+# 16. Endpoints da API
+
+A API deve seguir REST.
+
+## Usuários
+
+```http
+POST /api/usuarios
+GET /api/usuarios/{id}
+PUT /api/usuarios/{id}
+DELETE /api/usuarios/{id}
+```
+
+---
+
+# 17. Autenticação
+
+```http
+POST /api/auth/register
+POST /api/auth/login
+```
+
+Login retorna um token JWT.
+
+Exemplo conceitual:
+
+```json
+{
+  "token": "JWT_TOKEN"
+}
+```
+
+Nas requisições protegidas:
+
+```http
+Authorization: Bearer TOKEN
+```
+
+---
+
+# 18. Transações
+
+### Criar
+
+```http
+POST /api/transacoes
+```
+
+### Consultar
+
+```http
+GET /api/transacoes
+```
+
+### Consultar uma
+
+```http
+GET /api/transacoes/{id}
+```
+
+### Atualizar
+
+```http
+PUT /api/transacoes/{id}
+```
+
+### Excluir
+
+```http
+DELETE /api/transacoes/{id}
+```
+
+---
+
+# 19. Filtros de transações
+
+O endpoint deve aceitar filtros.
+
+Exemplo:
+
+```http
+GET /api/transacoes?tipo=DESPESA
+```
+
+Ou:
+
+```http
+GET /api/transacoes?categoria=ALIMENTACAO
+```
+
+Ou:
+
+```http
+GET /api/transacoes?dataInicio=2026-08-01&dataFim=2026-08-31
+```
+
+Idealmente, os filtros podem ser combinados.
+
+---
+
+# 20. Categorias
+
+```http
+GET /api/categorias
+POST /api/categorias
+PUT /api/categorias/{id}
+DELETE /api/categorias/{id}
+```
+
+As categorias padrão podem ser inseridas automaticamente durante a inicialização do sistema.
+
+---
+
+# 21. Orçamentos
+
+```http
+POST /api/orcamentos
+GET /api/orcamentos
+GET /api/orcamentos/{id}
+PUT /api/orcamentos/{id}
+DELETE /api/orcamentos/{id}
+```
+
+Endpoint adicional:
+
+```http
+GET /api/orcamentos/{id}/status
+```
+
+Resposta conceitual:
+
+```json
+{
+  "limite": 1000,
+  "consumido": 920,
+  "restante": 80,
+  "percentualUtilizado": 92,
+  "status": "RISCO"
+}
+```
+
+---
+
+# 22. Dashboard
+
+Criar um endpoint específico:
+
+```http
+GET /api/dashboard
+```
+
+Ele pode retornar:
+
+```json
+{
+  "receitaTotal": 5000,
+  "despesaTotal": 3200,
+  "saldo": 1800,
+  "economia": 1800,
+  "percentualComprometimento": 64
+}
+```
+
+Também pode incluir:
+
+* gastos por categoria;
+* evolução mensal;
+* alertas;
+* orçamento;
+* score.
+
+---
+
+# 23. Relatórios
+
+```http
+GET /api/relatorios/mensal
+```
+
+Com parâmetros:
+
+```http
+GET /api/relatorios/mensal?mes=8&ano=2026
+```
+
+O relatório deve apresentar:
+
+* receita;
+* despesa;
+* saldo;
+* categorias;
+* ranking;
+* percentual;
+* comparação com mês anterior.
+
+---
+
+# 24. Metas
+
+```http
+POST /api/metas
+GET /api/metas
+GET /api/metas/{id}
+PUT /api/metas/{id}
+DELETE /api/metas/{id}
+```
+
+Endpoint de acompanhamento:
+
+```http
+GET /api/metas/{id}/progresso
+```
+
+Retorno:
+
+```json
+{
+  "valorObjetivo": 12000,
+  "valorAcumulado": 3000,
+  "percentual": 25,
+  "valorRestante": 9000,
+  "valorMensalNecessario": 1000
+}
+```
+
+---
+
+# 25. Score financeiro
+
+Endpoint:
+
+```http
+GET /api/saude-financeira
+```
+
+Resposta conceitual:
+
+```json
+{
+  "score": 72,
+  "nivel": "BOM"
+}
+```
+
+Idealmente também retornar os fatores utilizados:
+
+```json
+{
+  "score": 72,
+  "nivel": "BOM",
+  "economia": 80,
+  "orcamento": 65,
+  "investimentos": 70,
+  "controleGastos": 75
+}
+```
+
+---
+
+# 26. Regras de negócio
+
+As regras devem ficar documentadas e implementadas na camada `Service`.
+
+## RN001
+
+Toda transação pertence a um usuário.
+
+## RN002
+
+Uma despesa possui uma categoria principal.
+
+## RN003
+
+Valor deve ser maior que zero.
+
+## RN004
+
+Orçamentos são mensais por padrão.
+
+## RN005
+
+Histórico financeiro deve ser preservado.
+
+## RN006
+
+Insights somente quando houver dados suficientes.
+
+## RN007
+
+Recomendações consideram renda atual.
+
+## RN008
+
+Score é recalculado quando houver alterações relevantes.
+
+## RN009
+
+Relatórios mensais devem possuir histórico.
+
+---
+
+# 27. Regras do orçamento
+
+Implementar uma função conceitual:
+
+```text
+percentual = (valorGasto / limite) × 100
+```
+
+Depois:
+
+```text
+0–70     → NORMAL
+71–89    → ATENCAO
+90–100   → RISCO
+>100     → ESTOURADO
+```
+
+### Exemplo
+
+Limite:
+
+R$ 1.000
+
+Gasto:
+
+R$ 750
+
+Percentual:
+
+75%
+
+Status:
+
+**ATENÇÃO**
+
+---
+
+# 28. Regras do saldo
+
+```text
+saldo = receitas - despesas
+```
+
+Exemplo:
+
+```text
+Receitas = 5000
+Despesas = 3200
+
+Saldo = 1800
+```
+
+---
+
+# 29. Comprometimento da renda
+
+```text
+(desposas / receitas) × 100
+```
+
+Exemplo:
+
+```text
+3200 / 5000 × 100
+= 64%
+```
+
+---
+
+# 30. Regra 50/30/20
+
+A implementação deve utilizar a renda líquida:
+
+```text
+necessidades = renda × 0.50
+desejos = renda × 0.30
+investimentos = renda × 0.20
+```
+
+Exemplo:
+
+```text
+Renda = 5000
+
+Necessidades = 2500
+Desejos = 1500
+Investimentos = 1000
+```
+
+---
+
+# 31. Reserva de emergência
+
+Uma implementação inicial pode utilizar:
+
+```text
+reservaIdeal = despesasMedias × mesesReserva
+```
+
+Exemplo:
+
+```text
+despesas médias = 3000
+meses = 6
+
+reserva ideal = 18000
+```
+
+O número de meses deve ser tratado como **parâmetro de negócio**, e não necessariamente ficar fixo no código.
+
+---
+
+# 32. Metas financeiras
+
+Fórmulas:
+
+### Valor restante
+
+```text
+valorObjetivo - valorAcumulado
+```
+
+### Percentual
+
+```text
+(valorAcumulado / valorObjetivo) × 100
+```
+
+### Valor mensal necessário
+
+```text
+valorRestante / mesesRestantes
+```
+
+---
+
+# 33. Insights
+
+Os insights devem ser implementados inicialmente com regras simples.
+
+Exemplo:
+
+```text
+Se gastoAtual > gastoAnterior × 1.30
+→ gerar alerta de aumento significativo
+```
+
+Outro:
+
+```text
+Se orçamento >= 90%
+→ gerar alerta de risco
+```
+
+Outro:
+
+```text
+Se orçamento > 100%
+→ gerar alerta de orçamento excedido
+```
+
+Isso permite criar a inteligência do sistema sem precisar começar com IA.
+
+---
+
+# 34. Categorização automática
+
+Criar inicialmente uma tabela ou estrutura de regras:
+
+```text
+Estabelecimento → Categoria
+```
+
+Exemplo:
+
+```text
+Netflix → ASSINATURAS
+McDonald's → ALIMENTACAO
+Shell → TRANSPORTE
+Farmácia São João → SAUDE
+```
+
+A lógica deve ser substituível no futuro.
+
+Assim, futuramente vocês podem trocar:
+
+**Regras fixas**
+
+por:
+
+**Modelo de Machine Learning**
+
+sem precisar reescrever todo o sistema.
+
+---
+
+# 35. Tratamento de erros
+
+A API precisa utilizar respostas HTTP apropriadas.
+
+### 200
+
+Requisição processada com sucesso.
+
+### 201
+
+Recurso criado.
+
+### 204
+
+Operação realizada sem conteúdo de retorno.
+
+### 400
+
+Dados inválidos.
+
+### 401
+
+Usuário não autenticado.
+
+### 403
+
+Usuário autenticado, mas sem permissão.
+
+### 404
+
+Recurso não encontrado.
+
+### 409
+
+Conflito.
+
+### 500
+
+Erro interno.
+
+---
+
+# 36. Validação
+
+Utilizar Bean Validation.
+
+Exemplos conceituais:
+
+```text
+@NotBlank
+```
+
+para descrição.
+
+```text
+@NotNull
+```
+
+para campos obrigatórios.
+
+```text
+@Positive
+```
+
+para valores financeiros.
+
+```text
+@Email
+```
+
+para e-mail.
+
+A validação deve existir **antes da aplicação das regras de negócio**.
+
+---
+
+# 37. Segurança
+
+Como o sistema trabalha com dados financeiros, segurança é um requisito crítico.
+
+Implementar:
+
+* autenticação;
+* autorização;
+* senha com hash;
+* JWT;
+* validação de entrada;
+* proteção de endpoints;
+* separação de dados por usuário;
+* controle de acesso.
+
+Um usuário não pode fazer:
+
+```http
+GET /api/transacoes/123
+```
+
+e receber uma transação pertencente a outro usuário.
+
+---
+
+# 38. Controle de acesso
+
+Toda operação deve verificar o usuário autenticado.
+
+Conceitualmente:
+
+```text
+Token
+  ↓
+Usuário autenticado
+  ↓
+Service
+  ↓
+Verifica propriedade do recurso
+  ↓
+Executa operação
+```
+
+---
+
+# 39. DTOs
+
+Evitem enviar diretamente as entidades JPA pela API.
+
+Utilizem DTOs.
+
+Exemplo:
+
+```text
+TransacaoRequestDTO
+TransacaoResponseDTO
+```
+
+Isso ajuda a:
+
+* controlar os dados expostos;
+* separar API do banco;
+* melhorar segurança;
+* facilitar manutenção;
+* evitar problemas de serialização.
+
+---
+
+# 40. Paginação
+
+A consulta de transações deve possuir paginação.
+
+Exemplo:
+
+```http
+GET /api/transacoes?page=0&size=20
+```
+
+Isso será importante quando houver milhares de registros.
+
+---
+
+# 41. Banco e performance
+
+Como existe requisito de consultas em até 2 segundos, algumas colunas provavelmente precisarão de índices.
+
+Possíveis índices:
+
+```text
+usuario_id
+data
+tipo
+categoria_id
+estabelecimento
+```
+
+Principalmente para consultas como:
+
+> "Todas as despesas do usuário X em agosto."
+
+---
+
+# 42. Transações de banco
+
+Operações que alteram várias informações devem ser tratadas cuidadosamente.
+
+Por exemplo:
+
+```text
+Cadastrar transação
+      ↓
+Salvar transação
+      ↓
+Atualizar orçamento
+      ↓
+Atualizar indicadores
+```
+
+Se uma operação crítica falhar no meio, o banco não deve ficar em estado inconsistente.
+
+No Spring, isso normalmente é tratado através de transações com `@Transactional`.
+
+---
+
+# 43. Testes
+
+O projeto deve possuir três níveis principais.
+
+## Testes unitários
+
+Testar regras isoladas.
+
+Exemplo:
+
+```text
+calcularSaldo()
+calcularPercentualOrcamento()
+calcularProgressoMeta()
+calcularScore()
+```
+
+---
+
+## Testes de integração
+
+Verificar:
+
+```text
+Controller
+   ↓
+Service
+   ↓
+Repository
+   ↓
+Banco
+```
+
+---
+
+## Testes de API
+
+Utilizar Postman ou Insomnia para validar os endpoints.
+
+---
+
+# 44. Exemplo de teste importante
+
+Teste:
+
+> Não permitir transação com valor zero.
+
+Entrada:
+
+```json
+{
+  "descricao": "Teste",
+  "valor": 0,
+  "tipo": "DESPESA"
+}
+```
+
+Resultado esperado:
+
+```text
+HTTP 400
+```
+
+---
+
+# 45. Git e GitHub
+
+Não trabalhem diretamente todos na `main`.
+
+Sugestão:
+
+```text
+main
+│
+├── develop
+│
+├── feature/transacoes
+├── feature/orcamentos
+├── feature/dashboard
+├── feature/metas
+└── feature/auth
+```
+
+Fluxo:
+
+```text
+Criar branch
+    ↓
+Desenvolver
+    ↓
+Commit
+    ↓
+Push
+    ↓
+Pull Request
+    ↓
+Code Review
+    ↓
+Merge
+```
+
+---
+
+# 46. Padrão de commits
+
+Utilizem Conventional Commits.
+
+Exemplos:
+
+```text
+feat: adiciona cadastro de transações
+feat: implementa orçamento mensal
+fix: corrige cálculo do saldo
+refactor: reorganiza camada de serviços
+test: adiciona testes de orçamento
+docs: atualiza documentação da API
+```
+
+---
+
+# 47. Divisão da equipe
+
+Uma divisão possível:
+
+### Pessoa 1 — Autenticação e usuários
+
+Responsável por:
+
+* cadastro;
+* login;
+* JWT;
+* segurança;
+* usuário.
+
+### Pessoa 2 — Transações
+
+Responsável por:
+
+* receitas;
+* despesas;
+* categorias;
+* filtros;
+* histórico.
+
+### Pessoa 3 — Orçamentos
+
+Responsável por:
+
+* orçamento;
+* cálculo de consumo;
+* alertas;
+* regras de limite.
+
+### Pessoa 4 — Dashboard e relatórios
+
+Responsável por:
+
+* indicadores;
+* gráficos;
+* comparações;
+* relatórios.
+
+### Pessoa 5 — Metas e inteligência
+
+Responsável por:
+
+* metas;
+* score;
+* insights;
+* recomendações.
+
+Se vocês forem menos pessoas, esses módulos podem ser agrupados.
+
+---
+
+# 48. Ordem recomendada de desenvolvimento
+
+Não comecem pelo dashboard nem pela IA.
+
+A sequência recomendada é:
+
+```text
+1. Configuração do projeto
+        ↓
+2. Banco de dados
+        ↓
+3. Usuário
+        ↓
+4. Autenticação
+        ↓
+5. Categorias
+        ↓
+6. Transações
+        ↓
+7. Orçamentos
+        ↓
+8. Dashboard
+        ↓
+9. Relatórios
+        ↓
+10. Metas
+        ↓
+11. Score
+        ↓
+12. Insights
+        ↓
+13. Recomendações
+        ↓
+14. Integrações externas
+```
+
+Isso evita construir funcionalidades dependentes de componentes que ainda não existem.
+
+---
+
+# 49. Roadmap
+
+## Fase 1 — Fundação
+
+* [ ] Criar repositório
+* [ ] Criar projeto Spring Boot
+* [ ] Configurar Maven
+* [ ] Configurar banco
+* [ ] Configurar JPA
+* [ ] Criar estrutura de pacotes
+* [ ] Configurar ambiente de desenvolvimento
+* [ ] Criar README
+
+## Fase 2 — Usuários
+
+* [ ] Entidade Usuário
+* [ ] Cadastro
+* [ ] Login
+* [ ] JWT
+* [ ] Spring Security
+* [ ] Testes
+
+## Fase 3 — Transações
+
+* [ ] Entidade Transação
+* [ ] Receita
+* [ ] Despesa
+* [ ] CRUD
+* [ ] Validação
+* [ ] Filtros
+* [ ] Paginação
+* [ ] Categorias
+
+## Fase 4 — Orçamento
+
+* [ ] Entidade Orçamento
+* [ ] Limite mensal
+* [ ] Cálculo de consumo
+* [ ] Percentual
+* [ ] Status
+* [ ] Alertas
+
+## Fase 5 — Dashboard
+
+* [ ] Receita total
+* [ ] Despesa total
+* [ ] Saldo
+* [ ] Economia
+* [ ] Comprometimento
+* [ ] Gastos por categoria
+* [ ] Evolução mensal
+
+## Fase 6 — Relatórios
+
+* [ ] Relatório mensal
+* [ ] Ranking
+* [ ] Comparação
+* [ ] Histórico
+
+## Fase 7 — Inteligência
+
+* [ ] Insights
+* [ ] Detecção de aumento de gastos
+* [ ] Detecção de queda de renda
+* [ ] Recomendações
+* [ ] Score
+
+## Fase 8 — Metas
+
+* [ ] Criar meta
+* [ ] Acompanhar progresso
+* [ ] Calcular valor mensal
+* [ ] Reserva de emergência
+
+---
+
+# 50. Critérios de conclusão
+
+Uma funcionalidade só deve ser considerada concluída quando:
+
+* código implementado;
+* regra de negócio implementada;
+* validações implementadas;
+* endpoint funcionando;
+* testes realizados;
+* documentação atualizada;
+* code review realizado;
+* branch integrada ao projeto.
+
+Isso evita a situação:
+
+> "Funciona na minha máquina, então está pronto."
+
+---
+
+# 51. Definition of Done
+
+Para cada tarefa:
+
+```text
+[ ] Requisito entendido
+[ ] Banco atualizado
+[ ] Entity criada/alterada
+[ ] Repository implementado
+[ ] Service implementado
+[ ] Controller implementado
+[ ] DTO implementado
+[ ] Validações implementadas
+[ ] Tratamento de erros implementado
+[ ] Testes criados
+[ ] Endpoint testado
+[ ] Documentação atualizada
+[ ] Pull Request aberto
+[ ] Code Review realizado
+[ ] Merge realizado
+```
+
+---
+
+# 52. Regra mais importante para a equipe
+
+Antes de implementar qualquer funcionalidade, vocês devem conseguir responder:
+
+> **Qual é a regra de negócio dessa funcionalidade?**
+
+Por exemplo:
+
+**"Criar orçamento"**
+
+não deve ser simplesmente:
+
+> Fazer um POST.
+
+Vocês precisam definir:
+
+* quem pode criar;
+* qual categoria pode receber;
+* se pode existir mais de um orçamento da mesma categoria no mesmo mês;
+* qual valor mínimo;
+* como o consumo será calculado;
+* quando o alerta será disparado;
+* o que acontece quando o orçamento é alterado;
+* como o histórico será preservado.
+
+Essa abordagem evita que cada integrante implemente uma interpretação diferente do sistema.
+
+---
+
+# 53. Fluxo geral que vocês devem ter em mente
+
+O projeto inteiro pode ser resumido desta forma:
+
+```text
+                    USUÁRIO
+                       │
+                       ▼
+                 AUTENTICAÇÃO
+                       │
+                       ▼
+                  TRANSAÇÕES
+                 /           \
+                ▼             ▼
+          RECEITAS          DESPESAS
+                              │
+                              ▼
+                         CATEGORIAS
+                              │
+                              ▼
+                         ORÇAMENTOS
+                              │
+                              ▼
+                         INDICADORES
+                              │
+               ┌──────────────┼──────────────┐
+               ▼              ▼              ▼
+           DASHBOARD      RELATÓRIOS      ALERTAS
+                                              │
+                                              ▼
+                                           INSIGHTS
+                                              │
+                                              ▼
+                                       RECOMENDAÇÕES
+                                              │
+                         ┌────────────────────┼─────────────────┐
+                         ▼                    ▼                 ▼
+                       METAS             INVESTIMENTOS       SCORE
+```
+
+Essa deve ser a **visão arquitetural de alto nível** que orienta o desenvolvimento.
+
+O ponto central é: **primeiro construam uma base financeira confiável — usuários, transações, categorias, orçamento e histórico. Depois construam a inteligência em cima desses dados.** Isso torna o projeto muito mais fácil de dividir entre vocês, testar e evoluir sem criar dependências desnecessárias.
