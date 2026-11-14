@@ -1,8 +1,18 @@
 package com.gestaofinanceira.alerta.entity;
 
-import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.Table;
+
+/** Aviso gerado pelo sistema para o usuario. Tabela: alerta. */
 @Entity
 @Table(name = "alerta")
 public class Alerta {
@@ -11,72 +21,56 @@ public class Alerta {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, length = 120)
+    @Enumerated(EnumType.STRING)
+    @Column(name = "tipo", nullable = false, length = 30, updatable = false)
+    private TipoAlerta tipo;
+
+    @Column(name = "titulo", nullable = false, length = 150, updatable = false)
     private String titulo;
 
-    @Column(nullable = false, length = 500)
+    @Column(name = "mensagem", nullable = false, length = 500, updatable = false)
     private String mensagem;
 
-    @Column(nullable = false, length = 30)
-    private String tipo;
+    @Column(name = "lida", nullable = false)
+    private boolean lida = false;
 
-    @Column(nullable = false)
-    private boolean lido = false;
+    @Column(name = "data_criacao", nullable = false, updatable = false)
+    private LocalDateTime dataCriacao;
 
-    @Column(nullable = false)
+    @Column(name = "data_leitura")
+    private LocalDateTime dataLeitura;
+
+    @Column(name = "usuario_id", nullable = false, updatable = false)
     private Long usuarioId;
 
-    @Column(nullable = false)
-    private LocalDateTime dataCriacao = LocalDateTime.now();
-
-    public Alerta() {
+    protected Alerta() {
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public String getTitulo() {
-        return titulo;
-    }
-
-    public void setTitulo(String titulo) {
-        this.titulo = titulo;
-    }
-
-    public String getMensagem() {
-        return mensagem;
-    }
-
-    public void setMensagem(String mensagem) {
-        this.mensagem = mensagem;
-    }
-
-    public String getTipo() {
-        return tipo;
-    }
-
-    public void setTipo(String tipo) {
+    public Alerta(TipoAlerta tipo, String titulo, String mensagem, Long usuarioId) {
         this.tipo = tipo;
-    }
-
-    public boolean isLido() {
-        return lido;
-    }
-
-    public void setLido(boolean lido) {
-        this.lido = lido;
-    }
-
-    public Long getUsuarioId() {
-        return usuarioId;
-    }
-
-    public void setUsuarioId(Long usuarioId) {
+        this.titulo = titulo;
+        this.mensagem = mensagem;
         this.usuarioId = usuarioId;
     }
 
-    public LocalDateTime getDataCriacao() {
-        return dataCriacao;
+    @PrePersist
+    void aoCriar() {
+        this.dataCriacao = LocalDateTime.now();
     }
+
+    public void marcarComoLida() {
+        if (!this.lida) {
+            this.lida = true;
+            this.dataLeitura = LocalDateTime.now();
+        }
+    }
+
+    public Long getId() { return id; }
+    public TipoAlerta getTipo() { return tipo; }
+    public String getTitulo() { return titulo; }
+    public String getMensagem() { return mensagem; }
+    public boolean isLida() { return lida; }
+    public LocalDateTime getDataCriacao() { return dataCriacao; }
+    public LocalDateTime getDataLeitura() { return dataLeitura; }
+    public Long getUsuarioId() { return usuarioId; }
 }

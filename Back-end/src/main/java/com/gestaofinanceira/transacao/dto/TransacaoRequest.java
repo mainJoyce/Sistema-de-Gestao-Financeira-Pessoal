@@ -34,6 +34,9 @@ public record TransacaoRequest(
 
         Recorrencia recorrencia,
 
-        Long categoriaId
+        Long categoriaId,
+
+        /** Opcional: de qual fonte de renda veio esta receita (so para tipo RECEITA). */
+        Long rendaId
 ) {
 }

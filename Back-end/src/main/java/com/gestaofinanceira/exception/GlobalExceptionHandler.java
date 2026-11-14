@@ -15,6 +15,10 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 
 import jakarta.servlet.http.HttpServletRequest;
 
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.web.HttpMediaTypeNotSupportedException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.multipart.support.MissingServletRequestPartException;
@@ -69,6 +73,34 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErroResposta> tratarCredenciais(
             CredenciaisInvalidasException ex, HttpServletRequest request) {
         return montarResposta(HttpStatus.UNAUTHORIZED, ex.getMessage(), request);
+    }
+
+    @ExceptionHandler(NoResourceFoundException.class)
+    public ResponseEntity<ErroResposta> tratarRotaInexistente(
+            NoResourceFoundException ex, HttpServletRequest request) {
+        return montarResposta(HttpStatus.NOT_FOUND, "Recurso não encontrado", request);
+    }
+
+    @ExceptionHandler(MissingServletRequestParameterException.class)
+    public ResponseEntity<ErroResposta> tratarParametroAusente(
+            MissingServletRequestParameterException ex, HttpServletRequest request) {
+        return montarResposta(HttpStatus.BAD_REQUEST,
+                "O parâmetro '" + ex.getParameterName() + "' é obrigatório", request);
+    }
+
+    @ExceptionHandler(HttpMediaTypeNotSupportedException.class)
+    public ResponseEntity<ErroResposta> tratarTipoDeMidiaNaoSuportado(
+            HttpMediaTypeNotSupportedException ex, HttpServletRequest request) {
+        return montarResposta(HttpStatus.valueOf(415),
+                "Tipo de conteúdo não suportado", request);
+    }
+
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<ErroResposta> tratarIntegridade(
+            DataIntegrityViolationException ex, HttpServletRequest request) {
+        log.warn("Violação de integridade em {}", request.getRequestURI(), ex);
+        return montarResposta(HttpStatus.CONFLICT,
+                "A operação viola uma restrição de integridade dos dados", request);
     }
 
     @ExceptionHandler(Exception.class)

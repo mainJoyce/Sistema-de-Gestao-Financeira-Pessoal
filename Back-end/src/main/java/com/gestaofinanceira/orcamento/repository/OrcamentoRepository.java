@@ -1,5 +1,6 @@
 package com.gestaofinanceira.orcamento.repository;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -9,10 +10,12 @@ import com.gestaofinanceira.orcamento.entity.Orcamento;
 
 public interface OrcamentoRepository extends JpaRepository<Orcamento, Long> {
 
-    List<Orcamento> findAllByUsuarioIdAndExcluidaFalse(Long usuarioId);
+    List<Orcamento> findAllByUsuarioIdOrderByMesReferenciaDescIdDesc(Long usuarioId);
 
-    Optional<Orcamento> findByIdAndUsuarioIdAndExcluidaFalse(Long id, Long usuarioId);
+    List<Orcamento> findAllByUsuarioIdAndMesReferencia(Long usuarioId, LocalDate mesReferencia);
 
-    boolean existsByUsuarioIdAndCategoriaIdAndMesAndAnoAndExcluidaFalse(
-            Long usuarioId, Long categoriaId, Integer mes, Integer ano);
+    Optional<Orcamento> findByIdAndUsuarioId(Long id, Long usuarioId);
+
+    boolean existsByUsuarioIdAndCategoriaIdAndMesReferencia(
+            Long usuarioId, Long categoriaId, LocalDate mesReferencia);
 }

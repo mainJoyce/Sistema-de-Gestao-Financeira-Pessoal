@@ -14,6 +14,7 @@ public record TransacaoResponse(
         TipoTransacao tipo,
         String estabelecimento,
         Recorrencia recorrencia,
-        Long categoriaId
+        Long categoriaId,
+        Long rendaId
 ) {
 }

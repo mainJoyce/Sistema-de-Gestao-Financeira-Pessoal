@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import com.gestaofinanceira.transacao.dto.SugestaoCategoriaResponse;
 import com.gestaofinanceira.transacao.dto.TransacaoRequest;
 import com.gestaofinanceira.transacao.dto.TransacaoResponse;
 import com.gestaofinanceira.transacao.entity.Recorrencia;
@@ -36,6 +37,7 @@ public class TransacaoController {
         this.transacaoService = transacaoService;
     }
 
+    /** Filtros opcionais + paginacao (pagina comeca em 0; tamanho padrao 100, maximo 500). */
     @GetMapping
     public ResponseEntity<List<TransacaoResponse>> listar(
             @AuthenticationPrincipal Long usuarioId,
@@ -46,10 +48,24 @@ public class TransacaoController {
             @RequestParam(required = false) Long categoriaId,
             @RequestParam(required = false) TipoTransacao tipo,
             @RequestParam(required = false) Recorrencia recorrencia,
-            @RequestParam(required = false) String estabelecimento) {
+            @RequestParam(required = false) String estabelecimento,
+            @RequestParam(defaultValue = "0") int pagina,
+            @RequestParam(defaultValue = "100") int tamanho) {
         return ResponseEntity.ok(transacaoService.listar(
                 usuarioId, dataInicial, dataFinal, categoriaId,
-                tipo, recorrencia, estabelecimento));
+                tipo, recorrencia, estabelecimento, pagina, tamanho));
+    }
+
+    /** Sugere a categoria para um estabelecimento (204 se nao houver sugestao). */
+    @GetMapping("/sugestao-categoria")
+    public ResponseEntity<SugestaoCategoriaResponse> sugerirCategoria(
+            @AuthenticationPrincipal Long usuarioId,
+            @RequestParam String estabelecimento,
+            @RequestParam(required = false) String descricao,
+            @RequestParam(defaultValue = "DESPESA") TipoTransacao tipo) {
+        return transacaoService.sugerirCategoria(usuarioId, tipo, estabelecimento, descricao)
+                .map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.noContent().build());
     }
 
     @GetMapping("/{id}")

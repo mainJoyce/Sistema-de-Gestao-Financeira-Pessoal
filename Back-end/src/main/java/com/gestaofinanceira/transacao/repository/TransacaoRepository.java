@@ -5,6 +5,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -33,7 +34,8 @@ public interface TransacaoRepository extends JpaRepository<Transacao, Long> {
                             @Param("categoriaId") Long categoriaId,
                             @Param("tipo") TipoTransacao tipo,
                             @Param("recorrencia") Recorrencia recorrencia,
-                            @Param("estabelecimento") String estabelecimento);
+                            @Param("estabelecimento") String estabelecimento,
+                            Pageable pageable);
 
     @Query("""
             SELECT t FROM Transacao t
@@ -100,4 +102,43 @@ BigDecimal somarDespesasPorCategoriaEPeriodo(
         @Param("inicio") LocalDate inicio,
         @Param("fim") LocalDate fim);
 
+    @Query("""
+            SELECT COALESCE(SUM(t.valor), 0) FROM Transacao t
+            WHERE t.usuarioId = :usuarioId
+              AND t.status = com.gestaofinanceira.transacao.entity.StatusTransacao.ATIVA
+              AND t.tipo = :tipo
+              AND t.data <= :ate
+            """)
+    BigDecimal somarPorTipoAte(@Param("usuarioId") Long usuarioId,
+                               @Param("tipo") TipoTransacao tipo,
+                               @Param("ate") LocalDate ate);
+
+    @Query("""
+            SELECT t.estabelecimento, SUM(t.valor) FROM Transacao t
+            WHERE t.usuarioId = :usuarioId
+              AND t.status = com.gestaofinanceira.transacao.entity.StatusTransacao.ATIVA
+              AND t.tipo = com.gestaofinanceira.transacao.entity.TipoTransacao.DESPESA
+              AND t.estabelecimento IS NOT NULL
+              AND t.data >= :inicio AND t.data <= :fim
+            GROUP BY t.estabelecimento
+            ORDER BY SUM(t.valor) DESC
+            """)
+    List<Object[]> somarDespesasPorEstabelecimento(@Param("usuarioId") Long usuarioId,
+                                                   @Param("inicio") LocalDate inicio,
+                                                   @Param("fim") LocalDate fim);
+
+    @Query("""
+            SELECT t.categoriaId FROM Transacao t
+            WHERE t.usuarioId = :usuarioId
+              AND t.status = com.gestaofinanceira.transacao.entity.StatusTransacao.ATIVA
+              AND t.tipo = :tipo
+              AND t.categoriaId IS NOT NULL
+              AND LOWER(t.estabelecimento) = :estabelecimento
+            GROUP BY t.categoriaId
+            ORDER BY COUNT(t) DESC, MAX(t.data) DESC
+            """)
+    List<Long> categoriasMaisUsadas(@Param("usuarioId") Long usuarioId,
+                                    @Param("tipo") TipoTransacao tipo,
+                                    @Param("estabelecimento") String estabelecimento,
+                                    Pageable pageable);
 }

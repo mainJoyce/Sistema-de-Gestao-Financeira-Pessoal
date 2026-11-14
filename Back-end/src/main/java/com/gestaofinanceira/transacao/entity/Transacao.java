@@ -53,6 +53,9 @@ public class Transacao {
     @Column(name = "importacao_id")
     private Long importacaoId;
 
+    @Column(name = "renda_usuario_id")
+    private Long rendaUsuarioId;
+
     protected Transacao() {
     }
 
@@ -90,6 +93,12 @@ public class Transacao {
     }
 
     public Long getImportacaoId() { return importacaoId; }
+
+    public void vincularRenda(Long rendaUsuarioId) {
+        this.rendaUsuarioId = rendaUsuarioId;
+    }
+
+    public Long getRendaUsuarioId() { return rendaUsuarioId; }
 
     public Long getId() { return id; }
     public String getDescricao() { return descricao; }

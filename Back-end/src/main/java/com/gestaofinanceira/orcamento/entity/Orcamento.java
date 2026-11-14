@@ -10,6 +10,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
+/** Limite de gasto de uma categoria em um mes. Tabela: orcamento. */
 @Entity
 @Table(name = "orcamento")
 public class Orcamento {
@@ -18,79 +19,40 @@ public class Orcamento {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
-    private Long usuarioId;
-
-    @Column(nullable = false)
-    private Long categoriaId;
-
-    @Column(nullable = false, precision = 10, scale = 2)
+    @Column(name = "valor_limite", nullable = false, precision = 10, scale = 2)
     private BigDecimal valorLimite;
 
-    @Column(nullable = false)
-    private Integer mes;
+    /** Sempre o dia 1 do mes de referencia. */
+    @Column(name = "mes_referencia", nullable = false)
+    private LocalDate mesReferencia;
 
-    @Column(nullable = false)
-    private Integer ano;
+    @Column(name = "usuario_id", nullable = false, updatable = false)
+    private Long usuarioId;
 
-    @Column(nullable = false)
-    private Boolean ativa = true;
-
-    @Column(nullable = false)
-    private Boolean excluida = false;
+    @Column(name = "categoria_id", nullable = false, updatable = false)
+    private Long categoriaId;
 
     protected Orcamento() {
     }
 
     public Orcamento(Long usuarioId, Long categoriaId,
-                     BigDecimal valorLimite, Integer mes, Integer ano) {
+                     BigDecimal valorLimite, LocalDate mesReferencia) {
         this.usuarioId = usuarioId;
         this.categoriaId = categoriaId;
         this.valorLimite = valorLimite;
-        this.mes = mes;
-        this.ano = ano;
+        this.mesReferencia = mesReferencia;
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public Long getUsuarioId() {
-        return usuarioId;
-    }
-
-    public Long getCategoriaId() {
-        return categoriaId;
-    }
-
-    public BigDecimal getValorLimite() {
-        return valorLimite;
-    }
-
-    public Integer getMes() {
-        return mes;
-    }
-
-    public Integer getAno() {
-        return ano;
-    }
-
-    public void atualizar(BigDecimal valorLimite, Integer mes, Integer ano) {
+    public void atualizar(BigDecimal valorLimite, LocalDate mesReferencia) {
         this.valorLimite = valorLimite;
-        this.mes = mes;
-        this.ano = ano;
+        this.mesReferencia = mesReferencia;
     }
 
-    public Boolean getAtiva() {
-        return ativa;
-    }
-
-    public Boolean getExcluida() {
-        return excluida;
-    }
-
-public void excluirLogicamente() {
-    this.ativa = false;
-    this.excluida = true;
-}
+    public Long getId() { return id; }
+    public BigDecimal getValorLimite() { return valorLimite; }
+    public LocalDate getMesReferencia() { return mesReferencia; }
+    public Long getUsuarioId() { return usuarioId; }
+    public Long getCategoriaId() { return categoriaId; }
+    public int getMes() { return mesReferencia.getMonthValue(); }
+    public int getAno() { return mesReferencia.getYear(); }
 }

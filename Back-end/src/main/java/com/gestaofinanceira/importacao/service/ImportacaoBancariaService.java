@@ -10,6 +10,7 @@ import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -22,6 +23,7 @@ import com.gestaofinanceira.importacao.entity.StatusImportacao;
 import com.gestaofinanceira.importacao.entity.TipoOrigem;
 import com.gestaofinanceira.importacao.repository.ImportacaoBancariaRepository;
 import com.gestaofinanceira.transacao.entity.TipoTransacao;
+import com.gestaofinanceira.transacao.event.TransacaoAlteradaEvent;
 import com.gestaofinanceira.transacao.service.TransacaoService;
 
 @Service
@@ -33,11 +35,14 @@ public class ImportacaoBancariaService {
 
     private final ImportacaoBancariaRepository importacaoRepository;
     private final TransacaoService transacaoService;
+    private final ApplicationEventPublisher eventos;
 
     public ImportacaoBancariaService(ImportacaoBancariaRepository importacaoRepository,
-                                     TransacaoService transacaoService) {
+                                     TransacaoService transacaoService,
+                                     ApplicationEventPublisher eventos) {
         this.importacaoRepository = importacaoRepository;
         this.transacaoService = transacaoService;
+        this.eventos = eventos;
     }
 
     @Transactional
@@ -80,6 +85,10 @@ public class ImportacaoBancariaService {
         boolean aproveitou = importadas > 0 || duplicadas > 0;
         importacao.concluir(aproveitou ? StatusImportacao.CONCLUIDA : StatusImportacao.FALHOU);
         importacaoRepository.save(importacao);
+
+        if (importadas > 0) {
+            eventos.publishEvent(new TransacaoAlteradaEvent(usuarioId));
+        }
 
         return paraResponse(importacao, importadas, duplicadas, comErro, erros);
     }

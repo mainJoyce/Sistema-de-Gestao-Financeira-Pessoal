@@ -1,7 +1,9 @@
 package com.gestaofinanceira.comparativo.service;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.YearMonth;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
@@ -13,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.gestaofinanceira.comparativo.dto.CategoriaVariacaoResponse;
+import com.gestaofinanceira.comparativo.dto.ComparativoPeriodosResponse;
 import com.gestaofinanceira.comparativo.dto.ComparativoResponse;
 import com.gestaofinanceira.comparativo.dto.VariacaoResponse;
 import com.gestaofinanceira.dashboard.dto.DashboardResponse;
@@ -48,6 +51,39 @@ public class ComparativoService {
                 variacao(atual.despesaTotal(), anterior.despesaTotal()),
                 variacao(atual.saldo(), anterior.saldo()),
                 compararCategorias(atual, anterior));
+    }
+
+    /** Compara dois periodos livres (semana, trimestre, etc.), de ate 366 dias cada. */
+    @Transactional(readOnly = true)
+    public ComparativoPeriodosResponse compararPeriodos(Long usuarioId,
+                                                        LocalDate inicioAtual, LocalDate fimAtual,
+                                                        LocalDate inicioAnterior, LocalDate fimAnterior) {
+        validarPeriodo(inicioAtual, fimAtual, "atual");
+        validarPeriodo(inicioAnterior, fimAnterior, "anterior");
+        if (inicioAtual.equals(inicioAnterior) && fimAtual.equals(fimAnterior)) {
+            throw new RegraDeNegocioException("Os dois períodos comparados devem ser diferentes");
+        }
+
+        DashboardResponse atual = dashboardService.resumoPeriodo(usuarioId, inicioAtual, fimAtual);
+        DashboardResponse anterior = dashboardService.resumoPeriodo(usuarioId, inicioAnterior, fimAnterior);
+
+        return new ComparativoPeriodosResponse(
+                inicioAtual, fimAtual, inicioAnterior, fimAnterior, atual, anterior,
+                variacao(atual.receitaTotal(), anterior.receitaTotal()),
+                variacao(atual.despesaTotal(), anterior.despesaTotal()),
+                variacao(atual.saldo(), anterior.saldo()),
+                compararCategorias(atual, anterior));
+    }
+
+    private void validarPeriodo(LocalDate inicio, LocalDate fim, String nome) {
+        if (inicio.isAfter(fim)) {
+            throw new RegraDeNegocioException(
+                    "No período " + nome + ", a data inicial não pode ser posterior à final");
+        }
+        if (ChronoUnit.DAYS.between(inicio, fim) > 365) {
+            throw new RegraDeNegocioException(
+                    "O período " + nome + " pode ter no máximo 366 dias");
+        }
     }
 
     private List<CategoriaVariacaoResponse> compararCategorias(DashboardResponse atual,

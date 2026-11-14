@@ -1,21 +1,24 @@
 package com.gestaofinanceira.meta.controller;
 
+import java.net.URI;
 import java.util.List;
 
-import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import com.gestaofinanceira.meta.dto.AporteRequest;
 import com.gestaofinanceira.meta.dto.MetaRequest;
-import com.gestaofinanceira.meta.entity.Meta;
+import com.gestaofinanceira.meta.dto.MetaResponse;
 import com.gestaofinanceira.meta.service.MetaService;
 
 import jakarta.validation.Valid;
@@ -31,50 +34,46 @@ public class MetaController {
     }
 
     @GetMapping
-    public List<Meta> listar(@RequestParam Long usuarioId) {
-        return metaService.listarPorUsuario(usuarioId);
+    public ResponseEntity<List<MetaResponse>> listar(@AuthenticationPrincipal Long usuarioId) {
+        return ResponseEntity.ok(metaService.listar(usuarioId));
     }
 
     @GetMapping("/{id}")
-    public Meta buscarPorId(
-            @PathVariable Long id,
-            @RequestParam Long usuarioId) {
-        return metaService.buscarPorId(id, usuarioId);
+    public ResponseEntity<MetaResponse> buscarPorId(
+            @PathVariable Long id, @AuthenticationPrincipal Long usuarioId) {
+        return ResponseEntity.ok(metaService.buscarPorId(id, usuarioId));
     }
 
     @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
-    public Meta criar(
+    public ResponseEntity<MetaResponse> criar(
             @Valid @RequestBody MetaRequest request,
-            @RequestParam Long usuarioId) {
-
-        Meta meta = new Meta();
-        meta.setNome(request.nome());
-        meta.setValorObjetivo(request.valorObjetivo());
-        meta.setDataDesejada(request.dataDesejada());
-
-        return metaService.criar(meta, usuarioId);
+            @AuthenticationPrincipal Long usuarioId) {
+        MetaResponse criada = metaService.criar(request, usuarioId);
+        URI location = ServletUriComponentsBuilder.fromCurrentRequest()
+                .path("/{id}").buildAndExpand(criada.id()).toUri();
+        return ResponseEntity.created(location).body(criada);
     }
 
     @PutMapping("/{id}")
-    public Meta atualizar(
+    public ResponseEntity<MetaResponse> atualizar(
             @PathVariable Long id,
             @Valid @RequestBody MetaRequest request,
-            @RequestParam Long usuarioId) {
+            @AuthenticationPrincipal Long usuarioId) {
+        return ResponseEntity.ok(metaService.atualizar(id, request, usuarioId));
+    }
 
-        Meta dados = new Meta();
-        dados.setNome(request.nome());
-        dados.setValorObjetivo(request.valorObjetivo());
-        dados.setDataDesejada(request.dataDesejada());
-
-        return metaService.atualizar(id, dados, usuarioId);
+    @PatchMapping("/{id}/aporte")
+    public ResponseEntity<MetaResponse> registrarAporte(
+            @PathVariable Long id,
+            @Valid @RequestBody AporteRequest request,
+            @AuthenticationPrincipal Long usuarioId) {
+        return ResponseEntity.ok(metaService.registrarAporte(id, request, usuarioId));
     }
 
     @DeleteMapping("/{id}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void excluir(
-            @PathVariable Long id,
-            @RequestParam Long usuarioId) {
+    public ResponseEntity<Void> excluir(
+            @PathVariable Long id, @AuthenticationPrincipal Long usuarioId) {
         metaService.excluir(id, usuarioId);
+        return ResponseEntity.noContent().build();
     }
 }

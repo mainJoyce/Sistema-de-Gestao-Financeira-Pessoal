@@ -10,6 +10,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
+/** Meta financeira do usuario. Tabela: meta_financeira. */
 @Entity
 @Table(name = "meta_financeira")
 public class Meta {
@@ -18,7 +19,7 @@ public class Meta {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, length = 50)
+    @Column(name = "nome", nullable = false, length = 50)
     private String nome;
 
     @Column(name = "valor_objetivo", nullable = false, precision = 10, scale = 2)
@@ -30,53 +31,33 @@ public class Meta {
     @Column(name = "valor_acumulado", nullable = false, precision = 10, scale = 2)
     private BigDecimal valorAcumulado = BigDecimal.ZERO;
 
-    @Column(name = "usuario_id", nullable = false)
+    @Column(name = "usuario_id", nullable = false, updatable = false)
     private Long usuarioId;
 
-    public Meta() {
+    protected Meta() {
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public String getNome() {
-        return nome;
-    }
-
-    public void setNome(String nome) {
+    public Meta(String nome, BigDecimal valorObjetivo, LocalDate dataDesejada, Long usuarioId) {
         this.nome = nome;
-    }
-
-    public BigDecimal getValorObjetivo() {
-        return valorObjetivo;
-    }
-
-    public void setValorObjetivo(BigDecimal valorObjetivo) {
         this.valorObjetivo = valorObjetivo;
+        this.dataDesejada = dataDesejada;
+        this.usuarioId = usuarioId;
     }
 
-    public LocalDate getDataDesejada() {
-        return dataDesejada;
-    }
-
-    public void setDataDesejada(LocalDate dataDesejada) {
+    public void atualizarDados(String nome, BigDecimal valorObjetivo, LocalDate dataDesejada) {
+        this.nome = nome;
+        this.valorObjetivo = valorObjetivo;
         this.dataDesejada = dataDesejada;
     }
 
-    public BigDecimal getValorAcumulado() {
-        return valorAcumulado;
+    public void registrarAporte(BigDecimal valor) {
+        this.valorAcumulado = this.valorAcumulado.add(valor);
     }
 
-    public void setValorAcumulado(BigDecimal valorAcumulado) {
-        this.valorAcumulado = valorAcumulado;
-    }
-
-    public Long getUsuarioId() {
-        return usuarioId;
-    }
-
-    public void setUsuarioId(Long usuarioId) {
-        this.usuarioId = usuarioId;
-    }
+    public Long getId() { return id; }
+    public String getNome() { return nome; }
+    public BigDecimal getValorObjetivo() { return valorObjetivo; }
+    public LocalDate getDataDesejada() { return dataDesejada; }
+    public BigDecimal getValorAcumulado() { return valorAcumulado; }
+    public Long getUsuarioId() { return usuarioId; }
 }
